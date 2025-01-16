@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch._dynamo import OptimizedModule
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -17,7 +19,7 @@ def load_pretrained_weights(network, fname, verbose=False):
 
     """
     if dist.is_initialized():
-        saved_model = torch.load(fname, map_location=torch.device('cuda', dist.get_rank()))
+        saved_model = torch.load(fname, map_location=torch.device('cuda', int(os.environ["LOCAL_RANK"])))
     else:
         saved_model = torch.load(fname)
     pretrained_dict = saved_model['network_weights']
